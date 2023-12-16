@@ -32,7 +32,7 @@ function use_data() {
     if(input_name!=null && input_interest.includes('stars') && Array.isArray(input_interest)) {
         var ddiv = document.createElement('div');
         var link = document.createElement('a');
-        link.href = 'gwiazdy.html';
+        link.href = 'gwiazdy';
         link.textContent = input_name + ', sprawdź ten artykuł o gwiazdach!';
         link.target = '_blank';
         ddiv.style.gridArea = 'header';

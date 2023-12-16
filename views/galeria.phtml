@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+        <link rel="icon" href="360713.png" type="image/x-icon">
+        <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+        <title>Galeria</title>
+    </head>
+    <body>
+        <header>
+            <h1>ASTRONOMIA</h1>
+        </header>
+        <nav>
+            <ul class="navbar">
+                <li>
+                    <div class="dropdown">
+                        <a class="dd_button" href="index">Strona główna</a>
+                        <svg width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16" id="IconChangeColor"> <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" id="mainIconPathAttribute" stroke-width="2" stroke="#942192" fill="#5e0699"></path> </svg>
+                    <div class="dd_content">
+                        <a href="index#omnie">O mnie</a>
+                        <a href="index#contact">Kontakt</a>
+                    </div>
+                    </div>
+                </li>
+                <li><a href="gwiazdy">Gwiazdy</a></li>
+                <li><a href="ankieta">Ankieta</a></li>
+                <li><a href="galeria">Galeria</a></li>
+            </ul>
+        </nav>
+        <main>
+            <form action="" method="post" enctype="multipart/form-data">
+            <label for="photo">Wybierz zdjęcie:</label>
+            <input type="file" name="photo" id="photo">
+            <br>
+            <label for="watermark">Znak wodny:</label>
+            <input type="text" name="watermark" id="watermark">
+            <br>
+            <label for="title">Tytuł zdjęcia:</label>
+            <input type="text" name="title" id="title">
+            <br>
+            <label for="author">Autor:</label>
+            <input type="text" name="author" id="author">
+            <br>
+            <input type="submit" value="Prześlij zdjęcie">
+            </form>
+        </main>
+        <footer>
+            <h4 id="contact">Kontakt</h4>
+            <a href="mailto:oskarwisniewski2004@gmail.com">Email</a>
+            <a href="tel:+48532602567">Nr telefonu</a>
+            <a href="https://www.facebook.com/smart.skar.ymg">Facebook</a>
+            <span>© Copyright 2023: Oskar Wiśniewski</span>
+        </footer>
+        <script src="data.js"></script>
+    </body>
+</html>
