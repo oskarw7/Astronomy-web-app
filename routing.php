@@ -4,5 +4,6 @@
         '/index' => 'index',
         '/gwiazdy' => 'gwiazdy',
         '/ankieta' => 'ankieta',
-        '/galeria' => 'galeria'
+        '/galeria' => 'galeria',
+        '/upload' => 'upload',
     ];
