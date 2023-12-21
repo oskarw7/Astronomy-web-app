@@ -14,6 +14,11 @@ function ankieta(&$model){
 }
 
 function galeria(&$model){
+    $photos = get_photos();
+    $model['photos'] = $photos;
+    if($photos != null){
+        pages($model);
+    }
     return 'galeria';
 }
 
@@ -33,7 +38,6 @@ function upload(&$model){
         $photo = [
             'name' => $_FILES['photo']['name'],
             'size' => $_FILES['photo']['size'],
-            'type' => $_FILES['photo']['type'],
             'temp_path' => $_FILES['photo']['tmp_name'],
             'author' => $_POST['author'],
             'watermark' => $_POST['watermark'],

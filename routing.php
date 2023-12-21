@@ -1,5 +1,5 @@
 <?php
-    $routing= [
+    $routing = [
         '/' => 'index',
         '/index' => 'index',
         '/gwiazdy' => 'gwiazdy',
