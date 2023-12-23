@@ -21,7 +21,7 @@ function upload(&$model){
         'temp_path' => null,
         'author' => null,
         'watermark' => null,
-        '_id' => null
+        '_id' => null,
     ];
 
     if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo'])){
@@ -31,6 +31,7 @@ function upload(&$model){
             'size' => $_FILES['photo']['size'],
             'temp_path' => $_FILES['photo']['tmp_name'],
             'author' => $_POST['author'],
+            'title' => $_POST['title'],
             'watermark' => $_POST['watermark'],
         ];
         $max_size = 1048576;
@@ -39,6 +40,9 @@ function upload(&$model){
         $img_info = finfo_open(FILEINFO_MIME_TYPE);
         $img_name = $photo['temp_path'];
         $photo['type'] = finfo_file($img_info, $img_name);
+        $parts = explode('/', $photo['type']);
+        $extention = '.' . $parts[1];
+        $photo['name'] = uniqid() . $extention;
 
         if(($photo['size'] <= $max_size) && in_array($photo['type'], $format)){
             $directory = 'images/original/';
@@ -54,13 +58,13 @@ function upload(&$model){
             }
         }
         elseif(($photo['size'] > $max_size) && !in_array($photo['type'], $format)){
-            $_SESSION['error'] = 'Zdjęcie jest za duże. Dopuszczalny rozmiar zdjęcia to 1MB. Zdjęcie musi być w formacie JPG lub PNG.';
+            $model['error'] = 'Zdjęcie jest za duże. Dopuszczalny rozmiar zdjęcia to 1MB. Zdjęcie musi być w formacie JPG lub PNG.';
         }
         elseif($photo['size'] > $max_size){
-            $_SESSION['error'] = 'Zdjęcie jest za duże. Dopuszczalny rozmiar zdjęcia to 1MB.';
+            $model['error'] = 'Zdjęcie jest za duże. Dopuszczalny rozmiar zdjęcia to 1MB.';
         }
         elseif(!in_array($photo['type'], $format)){
-            $_SESSION['error'] = 'Zdjęcie musi być w formacie JPG lub PNG.';
+            $model['error'] = 'Zdjęcie musi być w formacie JPG lub PNG.';
         }
     }
     return 'upload';
@@ -134,4 +138,100 @@ function galeria(&$model){
         $model['page'] = $page;
     }
     return 'galeria';
+}
+
+function user(&$model){
+    
+    return 'user';
+}
+
+function register(&$model){
+    $user = [
+        'email' => null,
+        'login' => null,
+        'password' => null,
+    ];
+
+    if($_SERVER['REQUEST_METHOD'] === 'POST'){
+        $email = $_POST['email'];
+        $login = $_POST['login'];
+        $password = $_POST['password'];
+        $repeat_password = $_POST['repeat_password'];
+        if($password === $repeat_password){
+            if(get_user($user)){
+                $model['reg_error'] = 'Podany login jest już zajęty.';
+            }
+            else{
+                $password = password_hash($password, PASSWORD_DEFAULT);
+                $user = [
+                    'email' => $email,
+                    'login' => $login,
+                    'password' => $password,
+                ];
+                $model['user'] = $user;
+                if(save_user($user)){
+                    return 'redirect:login';
+                }
+            }
+        }
+        else {
+            $model['reg_error'] = 'Hasła nie są takie same.';
+        }
+    }
+    return 'register';
+}
+
+function login(&$model){
+    if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true){
+        return 'user';
+    }
+    if($_SERVER['REQUEST_METHOD'] === 'POST'){
+        $user = [
+            'login' => $_POST['login'],
+            'password' => $_POST['password'],
+        ];
+        $find_user = get_user($user);
+        if($find_user){
+            if(password_verify($user['password'], $find_user['password'])){
+                $params = session_get_cookie_params();
+                setcookie(session_name(), '', time() -42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"] );
+                session_unset();
+                session_destroy();
+                session_start();
+                $_SESSION['user_id'] = $find_user['_id'];
+                $_SESSION['logged_in'] = true;
+                $model['user'] = $find_user;
+                $model['success']= 'Zalogowano pomyślnie.';
+                return 'redirect:user';
+            }
+            else{
+                $model['log_error'] = 'Niepoprawne hasło.';
+            }
+        }
+        else{
+            $model['log_error'] = 'Niepoprawny login.';
+        }
+    }
+    return 'login';
+}
+
+function logout(&$model){
+    $params= session_get_cookie_params();
+    setcookie(session_name(), '', time() -42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"] );
+    session_unset();
+    session_destroy();
+    return 'redirect:login';
+}
+
+function save_selected(&$model){
+    if($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['selected'])){
+        $_SESSION['selected'] = $_POST['selected'];
+    }
+    return 'redirect:galeria';
+}
+
+function selected_photos(&$model){
+    $photos = get_photos();
+    $model['photos'] = $photos;
+    return 'selected_photos';
 }

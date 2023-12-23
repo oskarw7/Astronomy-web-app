@@ -27,38 +27,17 @@
                 <li><a href="gwiazdy">Gwiazdy</a></li>
                 <li><a href="ankieta">Ankieta</a></li>
                 <li><a href="galeria">Galeria</a></li>
+                <li><a href="selected_photos">Wybrane zdjęcia</a></li>
+                <li><a href="login">Konto</a></li>
             </ul>
         </nav>
         <main>
             <a href="upload" id="upload">Dodaj zdjęcie</a>
-            <?php
-            foreach($photos as $photo){
-                $parts = explode('.', $photo['name']);
-                $base = $parts[0];
-                $extension = $parts[1];
-                $watermark = "images/watermark/" . $base . "." . $extension;
-                $thumbnail = "images/thumbnail/" . $base . "." . $extension;
-                echo '<div class="photos_php">';
-                echo '<a href="' . $watermark . '"><img src="' . $thumbnail . '" alt=""/>';
-                echo '</div>';
-            }
-
-            echo '<div class="pages">';
-            if($page > 1){
-                echo '<div class="page_button">';
-                echo '<a href="?page=' . ($page - 1) . '">Poprzednia strona</a>';
-                echo '</div>';
-            }
-            if($page > 1){
-                echo '<span>Strona ' . $page . ' z ' . $total_pages . '</span>';
-            }
-            if($page < $total_pages){
-                echo '<div class="page_button">';
-                echo '<a href="?page=' . ($page + 1) . '">Następna strona</a>';
-                echo '</div>';
-            }
-            echo '</div>';
-            ?>
+            <form action="save_selected" method="post">
+                <?php require_once 'layout/gallery.php'; ?>
+                <input type="submit" name="save_selected" value="Zapisz zaznaczone">
+            </form>
+            <?php include_once 'layout/paging.php'; ?>
         </main>
         <footer>
             <h4 id="contact">Kontakt</h4>

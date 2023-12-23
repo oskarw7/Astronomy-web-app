@@ -29,3 +29,27 @@ function get_photos(){
     $db = get_db();
     return $db->photos->find()->toArray();
 }
+
+function save_user($user){
+    $db = get_db();
+    $db->users->insertOne($user);
+    return true;
+}
+
+function get_user($user){
+    $db = get_db();
+    return $db->users->findOne(['login' => $user['login']]);
+}
+
+function print_users(){
+    $db = get_db();
+    $users = $db->users->find();
+    foreach($users as $user){
+        print_r($user);
+    }
+}
+
+function clear_users(){
+    $db = get_db();
+    $db->users->deleteMany([]);
+}
