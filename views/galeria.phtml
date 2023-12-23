@@ -30,7 +30,35 @@
             </ul>
         </nav>
         <main>
-            <a href="upload">Dodaj zdjęcie</a>
+            <a href="upload" id="upload">Dodaj zdjęcie</a>
+            <?php
+            foreach($photos as $photo){
+                $parts = explode('.', $photo['name']);
+                $base = $parts[0];
+                $extension = $parts[1];
+                $watermark = "images/watermark/" . $base . "." . $extension;
+                $thumbnail = "images/thumbnail/" . $base . "." . $extension;
+                echo '<div class="photos_php">';
+                echo '<a href="' . $watermark . '"><img src="' . $thumbnail . '" alt=""/>';
+                echo '</div>';
+            }
+
+            echo '<div class="pages">';
+            if($page > 1){
+                echo '<div class="page_button">';
+                echo '<a href="?page=' . ($page - 1) . '">Poprzednia strona</a>';
+                echo '</div>';
+            }
+            if($page > 1){
+                echo '<span>Strona ' . $page . ' z ' . $total_pages . '</span>';
+            }
+            if($page < $total_pages){
+                echo '<div class="page_button">';
+                echo '<a href="?page=' . ($page + 1) . '">Następna strona</a>';
+                echo '</div>';
+            }
+            echo '</div>';
+            ?>
         </main>
         <footer>
             <h4 id="contact">Kontakt</h4>
