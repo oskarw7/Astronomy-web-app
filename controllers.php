@@ -193,11 +193,11 @@ function login(&$model){
         $find_user = get_user($user);
         if($find_user){
             if(password_verify($user['password'], $find_user['password'])){
-                $params = session_get_cookie_params();
+               /* $params = session_get_cookie_params();
                 setcookie(session_name(), '', time() -42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"] );
                 session_unset();
                 session_destroy();
-                session_start();
+                session_start(); */
                 $_SESSION['user_id'] = $find_user['_id'];
                 $_SESSION['logged_in'] = true;
                 $model['user'] = $find_user;
