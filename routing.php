@@ -11,5 +11,6 @@
         '/login' => 'login',
         '/logout' => 'logout',
         '/save_selected' => 'save_selected',
+        '/delete_selected' => 'delete_selected',
         '/selected_photos' => 'selected_photos',
     ];

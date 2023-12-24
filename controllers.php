@@ -20,7 +20,10 @@ function upload(&$model){
         'type' => null,
         'temp_path' => null,
         'author' => null,
+        'title' => null,
         'watermark' => null,
+        'watermark_path' => null,
+        'thumbnail_path' => null,
         '_id' => null,
     ];
 
@@ -133,7 +136,15 @@ function galeria(&$model){
             $page = $total_pages;
         }
         $start = ($page - 1) * $photos_per_page;
-        $model['photos'] = array_slice($photos, $start, $photos_per_page);
+        $photos_page = array_slice($photos, $start, $photos_per_page);
+        foreach($photos_page as $photo){
+            $parts = explode('.', $photo['name']);
+            $base = $parts[0];
+            $extension = $parts[1];
+            $photo['watermark_path'] = "images/watermark/" . $base . "." . $extension;
+            $photo['thumbnail_path'] = "images/thumbnail/" . $base . "." . $extension;
+        }
+        $model['photos'] = $photos_page;
         $model['total_pages'] = $total_pages;
         $model['page'] = $page;
     }
@@ -157,9 +168,11 @@ function register(&$model){
         $login = $_POST['login'];
         $password = $_POST['password'];
         $repeat_password = $_POST['repeat_password'];
+        $user['login'] = $login;
+        $user['email'] = $email;
         if($password === $repeat_password){
-            if(get_user($user)){
-                $model['reg_error'] = 'Podany login jest już zajęty.';
+            if(find_user($user)){
+                $model['reg_error'] = 'Podany login lub email jest już zajęty.';
             }
             else{
                 $password = password_hash($password, PASSWORD_DEFAULT);
@@ -193,7 +206,7 @@ function login(&$model){
         $find_user = get_user($user);
         if($find_user){
             if(password_verify($user['password'], $find_user['password'])){
-               /* $params = session_get_cookie_params();
+                /* $params = session_get_cookie_params();
                 setcookie(session_name(), '', time() -42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"] );
                 session_unset();
                 session_destroy();
@@ -216,7 +229,7 @@ function login(&$model){
 }
 
 function logout(&$model){
-    $params= session_get_cookie_params();
+    $params = session_get_cookie_params();
     setcookie(session_name(), '', time() -42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"] );
     session_unset();
     session_destroy();
@@ -225,13 +238,59 @@ function logout(&$model){
 
 function save_selected(&$model){
     if($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['selected'])){
-        $_SESSION['selected'] = $_POST['selected'];
+        if(!isset($_SESSION['selected'])){
+            $_SESSION['selected'] = [];
+        }
+        $_SESSION['selected'] = array_merge($_SESSION['selected'], $_POST['selected']);
     }
     return 'redirect:galeria';
+}
+
+function delete_selected(&$model){
+    if($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['delete_selected'])){
+        if(isset($_SESSION['selected'])){
+            $_SESSION['selected'] = array_diff($_SESSION['selected'], $_POST['delete_selected']);
+        }
+    }
+    return 'redirect:selected_photos';
 }
 
 function selected_photos(&$model){
     $photos = get_photos();
     $model['photos'] = $photos;
+    $selected_photos = [];
+    if(!isset($_SESSION['selected']) || empty($_SESSION['selected'])){
+        return 'redirect:galeria';
+    }
+    foreach($photos as $photo){
+        if(isset($_SESSION['selected']) && in_array($photo['_id'], $_SESSION['selected'])){
+            $parts = explode('.', $photo['name']);
+            $base = $parts[0];
+            $extension = $parts[1];
+            $photo['watermark_path'] = "images/watermark/" . $base . "." . $extension;
+            $photo['thumbnail_path'] = "images/thumbnail/" . $base . "." . $extension;
+            array_push($selected_photos, $photo);
+        }
+    }
+    $model['selected_photos'] = $selected_photos;
+    $count_photos = count($selected_photos);
+    $photos_per_page = 4;
+    if($count_photos > 0){
+        if(isset($_GET['page'])){
+            $page = (int)$_GET['page'];
+        }
+        else{
+            $page = 1;
+        }
+        $total_pages = ceil($count_photos / $photos_per_page);
+        if($page > $total_pages){
+            $page = $total_pages;
+        }
+        $start = ($page - 1) * $photos_per_page;
+        $photos_page = array_slice($selected_photos, $start, $photos_per_page);
+        $model['selected_photos'] = $photos_page;
+        $model['total_pages'] = $total_pages;
+        $model['page'] = $page;
+    }
     return 'selected_photos';
 }

@@ -33,30 +33,18 @@
         </nav>
         <main>
             <a href="upload" id="upload">Dodaj zdjęcie</a>
-            <form action="" method="post">
+            <form action="delete_selected" method="post">
                 <?php
-                foreach($photos as $photo){
-                    $parts = explode('.', $photo['name']);
-                    $base = $parts[0];
-                    $extension = $parts[1];
-                    $watermark = "images/watermark/" . $base . "." . $extension;
-                    $thumbnail = "images/thumbnail/" . $base . "." . $extension;
+                foreach($selected_photos as $photo){
                     echo '<div class="photos_php">';
-                    if(in_array($photo['_id'], $_SESSION['selected'])){
-                        echo '<a href="' . $watermark . '"><img src="' . $thumbnail . '" alt=""/></a>';
-                        echo '<p>Tytuł: ' . $photo['title'] . '</p>';
-                        echo '<p>Autor: ' . $photo['author'] . '</p>';
-                        if(isset($_SESSION['selected']) && in_array($photo['_id'], $_SESSION['selected'])){
-                            echo '<input type="checkbox" name="selected[]" value="' . $photo['_id'] . '" checked>';
-                        }
-                        else{
-                            echo '<input type="checkbox" name="selected[]" value="' . $photo['_id'] . '">';
-                        }
-                    }
+                    echo '<a href="' . $photo['watermark_path'] . '"><img src="' . $photo['thumbnail_path'] . '" alt=""/></a>';
+                    echo '<p>Tytuł: ' . $photo['title'] . '</p>';
+                    echo '<p>Autor: ' . $photo['author'] . '</p>';
+                    echo '<input type="checkbox" name="delete_selected[]" value="' . $photo['_id'] . '">';
                     echo '</div>';
-                }
+                    }
                 ?>
-                <input type="submit" name="delete_selected" value="Usuń zaznaczone">
+                <input type="submit" name="delete" value="Usuń zaznaczone z zapamiętanych">
             </form>
             <?php include_once 'layout/paging.php'; ?>
         </main>

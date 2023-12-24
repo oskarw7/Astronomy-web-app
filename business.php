@@ -41,6 +41,17 @@ function get_user($user){
     return $db->users->findOne(['login' => $user['login']]);
 }
 
+function find_user($user){
+    $db = get_db();
+    $query = [
+        '$or' => [
+            ['login' => $user['login']],
+            ['email' => $user['email']],
+        ]
+    ];
+    return $db->users->findOne($query);
+}
+
 function print_users(){
     $db = get_db();
     $users = $db->users->find();
