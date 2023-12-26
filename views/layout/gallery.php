@@ -5,7 +5,7 @@ foreach($photos as $photo){
     echo '<p>Tytuł: ' . $photo['title'] . '</p>';
     echo '<p>Autor: ' . $photo['author'] . '</p>';
 
-    if(isset($_SESSION['selected']) && in_array($photo['_id'], $_SESSION['selected'])){
+    if($photo['checked'] === 'checked'){
         echo '<input type="checkbox" name="selected[]" value="' . $photo['_id'] . '" checked>';
     }
     else{

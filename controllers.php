@@ -24,6 +24,7 @@ function upload(&$model){
         'watermark' => null,
         'watermark_path' => null,
         'thumbnail_path' => null,
+        'checked' => '',
         '_id' => null,
     ];
 
@@ -143,6 +144,13 @@ function galeria(&$model){
             $extension = $parts[1];
             $photo['watermark_path'] = "images/watermark/" . $base . "." . $extension;
             $photo['thumbnail_path'] = "images/thumbnail/" . $base . "." . $extension;
+            if(isset($_SESSION['selected']) && in_array($photo['_id'], $_SESSION['selected'])){
+                $photo['checked'] = 'checked';
+            }
+            else{
+                $photo['checked'] = '';
+            
+            }
         }
         $model['photos'] = $photos_page;
         $model['total_pages'] = $total_pages;
@@ -206,11 +214,6 @@ function login(&$model){
         $find_user = get_user($user);
         if($find_user){
             if(password_verify($user['password'], $find_user['password'])){
-                /* $params = session_get_cookie_params();
-                setcookie(session_name(), '', time() -42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"] );
-                session_unset();
-                session_destroy();
-                session_start(); */
                 $_SESSION['user_id'] = $find_user['_id'];
                 $_SESSION['logged_in'] = true;
                 $model['user'] = $find_user;
