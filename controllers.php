@@ -214,6 +214,8 @@ function login(&$model){
         $find_user = get_user($user);
         if($find_user){
             if(password_verify($user['password'], $find_user['password'])){
+                $_SESSION = [];
+                session_regenerate_id();
                 $_SESSION['user_id'] = $find_user['_id'];
                 $_SESSION['logged_in'] = true;
                 $model['user'] = $find_user;

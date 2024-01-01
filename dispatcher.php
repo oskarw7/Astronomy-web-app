@@ -23,5 +23,6 @@ function render($view, $model)
 {
     global $routing;
     extract($model);
+    require_once 'views/layout/header_nav.phtml';
     include 'views/' . $view . '.phtml';
 }
