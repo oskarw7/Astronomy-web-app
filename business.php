@@ -23,50 +23,71 @@ function save_photo($id, $photo, $path){
         elseif(move_uploaded_file($photo['temp_path'], $path) && $id != null){
             $db->photos->replaceOne(['_id' => new ObjectID($id)], $photo);
         }
-        return true;
+        $bool = true;
     }
     catch (MongoDB\Driver\Exception\Exception $e) {
         error_log("MongoDB exception: " . $e->getMessage());
         echo "Wystąpił problem. Spróbuj ponownie.";
-        return false;
+        $bool = false;
     }
+    return $bool;
 }
 
 function get_photos(){
     try {
         $db = get_db();
-        return $db->photos->find()->toArray();
+        $array = $db->photos->find()->toArray();
     }
     catch (MongoDB\Driver\Exception\Exception $e) {
         error_log("MongoDB exception: " . $e->getMessage());
         echo "Wystąpił problem. Spróbuj ponownie.";
-        return false;
+        $array = [];
     }
+    return $array;
+}
+
+function slice_photos($skip, $limit){
+    try {
+        $db = get_db();
+        $filter = [
+            'skip' => $skip,
+            'limit' => $limit,
+        ];
+        $array = $db->photos->find([], $filter)->toArray();
+    }
+    catch (MongoDB\Driver\Exception\Exception $e) {
+        error_log("MongoDB exception: " . $e->getMessage());
+        echo "Wystąpił problem. Spróbuj ponownie.";
+        $array = [];
+    }
+    return $array;
 }
 
 function save_user($user){
     try {
         $db = get_db();
         $db->users->insertOne($user);
-        return true;
+        $bool = true;
     }
     catch (MongoDB\Driver\Exception\Exception $e) {
         error_log("MongoDB exception: " . $e->getMessage());
         echo "Wystąpił problem. Spróbuj ponownie.";
-        return false;
+        $bool = false;
     }
+    return $bool;
 }
 
 function get_user($user){
     try {
         $db = get_db();
-        return $db->users->findOne(['login' => $user['login']]);
+        $found = $db->users->findOne(['login' => $user['login']]);
     }
     catch (MongoDB\Driver\Exception\Exception $e) {
         error_log("MongoDB exception: " . $e->getMessage());
         echo "Wystąpił problem. Spróbuj ponownie.";
-        return false;
+        $found = [];
     }
+    return $found;
 }
 
 function find_user($user){
@@ -78,11 +99,12 @@ function find_user($user){
             ['email' => $user['email']],
         ]
     ];
-    return $db->users->findOne($query);
+    $found = $db->users->findOne($query);
     }
     catch (MongoDB\Driver\Exception\Exception $e) {
         error_log("MongoDB exception: " . $e->getMessage());
         echo "Wystąpił problem. Spróbuj ponownie.";
-        return false;
+        $found = [];
     }
+    return $found;
 }

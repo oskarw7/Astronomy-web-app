@@ -1,5 +1,6 @@
 <?php
 require_once 'business.php';
+require_once 'controllers_utils.php';
 
 function index(&$model){
     return 'index';
@@ -60,6 +61,9 @@ function upload(&$model){
             if(save_photo($id, $photo, $path)){
                 return 'redirect:galeria';
             }
+            else {
+                $model['error'] = 'Nie udało się zapisać zdjęcia.';
+            }
         }
         elseif(($photo['size'] > $max_size) && !in_array($photo['type'], $format)){
             $model['error'] = 'Zdjęcie jest za duże. Dopuszczalny rozmiar zdjęcia to 1MB. Zdjęcie musi być w formacie JPG lub PNG.';
@@ -72,52 +76,6 @@ function upload(&$model){
         }
     }
     return 'upload';
-}
-
-function add_watermark($photo){
-    switch($photo['type']){
-        case 'image/jpeg':
-            $image = imagecreatefromjpeg($photo['temp_path']);
-            break; 
-        case 'image/png':
-            $image = imagecreatefrompng($photo['temp_path']);
-            break;
-    }
-    $width = imagesx($image);
-    $height = imagesy($image);
-    $clone = imagecreatetruecolor($width, $height);
-    imagecopy($clone, $image, 0, 0, 0, 0, $width, $height);
-
-    $white = imagecolorallocate($clone, 255, 255, 255);
-    $black = imagecolorallocate($clone, 0, 0, 0);
-
-    imagettftext($clone, 30, 0, 30, 30, $white, 'static/AllerDisplay.ttf', '© ' . $photo['watermark']);
-    imagettftext($clone, 30, 0, 30, 100, $black, 'static/AllerDisplay.ttf', '© ' . $photo['watermark']);
-
-    imagepng($clone, "images/watermark/" . $photo['name']);
-    imagedestroy($clone);
-}
-
-function create_thumbnail($photo){
-    switch($photo['type']){
-        case 'image/jpeg':
-            $image = imagecreatefromjpeg($photo['temp_path']);
-            break;
-        case 'image/png':
-            $image = imagecreatefrompng($photo['temp_path']);
-            break;
-    }
-
-    $src_width = imagesx($image);
-    $src_height = imagesy($image);
-    $width = 200;
-    $height = 125;
-    $clone = imagecreatetruecolor($width, $height);
-    imagecopyresampled($clone, $image, 0, 0, 0, 0, $width, $height, $src_width, $src_height);
-
-    imagepng($clone, "images/thumbnail/" . $photo['name']);
-    imagedestroy($clone);
-
 }
 
 function galeria(&$model){
@@ -137,7 +95,7 @@ function galeria(&$model){
             $page = $total_pages;
         }
         $start = ($page - 1) * $photos_per_page;
-        $photos_page = array_slice($photos, $start, $photos_per_page);
+        $photos_page = slice_photos($start, $photos_per_page);
         foreach($photos_page as $photo){
             $parts = explode('.', $photo['name']);
             $base = $parts[0];
