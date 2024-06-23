@@ -1,0 +1,1 @@
+Web application about astronomy. App allows user to register, login, upload data with watermark and store it in database and select images displayed in current session. Design pattern used here is MVC. Tools which were mainly used: JavaScript, PHP, MongoDB, Apache.
